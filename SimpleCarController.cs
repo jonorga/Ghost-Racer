@@ -17,6 +17,8 @@ public class SimpleCarController : MonoBehaviour
         
     public void FixedUpdate()
     {
+        
+
     	if (ghosted)
     		return;
         float motor = maxMotorTorque * motorSpeed;// * Input.GetAxis("Vertical");
