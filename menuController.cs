@@ -30,5 +30,39 @@ using UnityEngine;
 
 public class menuController : MonoBehaviour
 {
-    
+	public Material button_mat;
+	public GameObject menu_ghosts;
+	public GameObject gameplay_controls, main_menus;
+	Color button_color = Color.white;
+
+	public void fadeMainMenu()
+	{
+		StartCoroutine(fadeMainEnum());
+	}
+
+	IEnumerator fadeMainEnum()
+	{
+		while (button_mat.color.a > 0)
+		{
+			button_color.a -= 0.1f;
+			button_mat.color = button_color;
+			yield return new WaitForSeconds(0.1f);
+		}
+		yield return new WaitForSeconds(0.2f);
+		main_menus.SetActive(false);
+		gameplay_controls.SetActive(true);
+		while (button_mat.color.a < 1)
+		{
+			button_color.a += 0.1f;
+			button_mat.color = button_color;
+			yield return new WaitForSeconds(0.1f);
+		}
+		yield return new WaitForSeconds(6);
+		menu_ghosts.SetActive(false);
+	}
+
+	void Start()
+	{
+		button_mat.color = button_color;
+	}
 }

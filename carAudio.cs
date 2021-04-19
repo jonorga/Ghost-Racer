@@ -29,7 +29,6 @@ public class carAudio : MonoBehaviour
 	    	if (!rev.isPlaying)
 	    		rev.Play();
     	}
-    	Debug.Log(mag);
     }
 
 

@@ -34,13 +34,16 @@ public class gameController : MonoBehaviour
 	public Transform[] ghost_spawn_point = new Transform[9];
 	public int goals_reached;
 	SimpleCarController _scc;
-	bool first = true;
+	audioController _ac;
+	bool first = true, paused = false;
 	
 
 	void Start()
 	{
 		GameObject _sccGO = GameObject.FindGameObjectWithTag("Player");
+		GameObject _acGO = GameObject.FindGameObjectWithTag("Audio");
 		_scc = _sccGO.GetComponent<SimpleCarController>();
+		_ac = _acGO.GetComponent<audioController>();
 	}
 
 	public void beginBasicGame()
@@ -52,6 +55,7 @@ public class gameController : MonoBehaviour
 	{
 		Debug.Log("Car touched");
 		_scc.gameOver();
+		_ac.playGameover();
 		ghosted_text.SetActive(true);
 		player_controls.SetActive(false);
 	}
@@ -60,6 +64,7 @@ public class gameController : MonoBehaviour
 	{
 		goals_reached++;
 		points_text.text = goals_reached.ToString();
+		_ac.playPoint();
 		// Spawn goal point
 		Instantiate(goal_pointPF, goal_spawn_point[Random.Range(0,34)]);
 
@@ -68,6 +73,7 @@ public class gameController : MonoBehaviour
 		{
 			first = false;
 			first_ghost.SetActive(true);
+			_ac.startGameplayMusic();
 			return;
 		}
 
@@ -82,5 +88,14 @@ public class gameController : MonoBehaviour
 			dist = Vector3.Distance(ghost_spawn_point[selected].position, player_car.transform.position);
 		} while (dist < 100);
 		Instantiate(ghostPF, ghost_spawn_point[selected]);
+	}
+
+	public void togglePause()
+	{
+		if (paused)
+			Time.timeScale = 1;
+		else
+			Time.timeScale = 0;
+		paused = !paused;
 	}
 }
