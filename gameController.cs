@@ -33,26 +33,73 @@ public class gameController : MonoBehaviour
 	public Transform[] goal_spawn_point = new Transform[35];
 	public Transform[] ghost_spawn_point = new Transform[9];
 	public int goals_reached;
+
+	// Private global variables
+	Transform carTF;
+	Transform mainCamTF;
 	SimpleCarController _scc;
 	audioController _ac;
-	bool first = true, paused = false;
+	bool first = true, paused = false, gameover = false;
+
+	// Tilt floats
+	float xTilt = 0, zTilt = 0;
+	bool car_flipped = false, car_needs_orienting = false;
 	
 
 	void Start()
 	{
+		// Get gameobjects to find components from
 		GameObject _sccGO = GameObject.FindGameObjectWithTag("Player");
 		GameObject _acGO = GameObject.FindGameObjectWithTag("Audio");
+		GameObject mainCamGO = GameObject.FindGameObjectWithTag("MainCamera");
+
+		// Components from that gameobject
 		_scc = _sccGO.GetComponent<SimpleCarController>();
 		_ac = _acGO.GetComponent<audioController>();
+		mainCamTF = mainCamGO.transform.parent.GetComponent<Transform>();
+		carTF = player_car.GetComponent<Transform>();
+
+		// Recifies car if flipped
+		StartCoroutine("check_car_flipped");
 	}
 
-	public void beginBasicGame()
+	
+
+	IEnumerator check_car_flipped()
 	{
-		// Instantiate goal point
+		for (;;)
+		{
+			xTilt = carTF.eulerAngles.x;
+			zTilt = carTF.eulerAngles.z;
+			if (car_flipped)
+				car_needs_orienting = true;
+			if ((xTilt > 30 && xTilt < 330) || (zTilt > 30 && zTilt < 330)) {
+				car_flipped = true;
+			}
+			else {
+				car_flipped = false;
+				car_needs_orienting = false;
+			}
+			yield return new WaitForSeconds(2.5f);
+		}
 	}
 
+	void FixedUpdate()
+	{
+		if (car_needs_orienting)
+			if (carTF.position.y < 6.5f) {
+				carTF.position = new Vector3(carTF.position.x, carTF.position.y + 0.1f, carTF.position.z);
+				carTF.LookAt(mainCamTF.forward);
+			}
+	}
+
+
+	// Called when a ghost touches the car
 	public void carTouched()
 	{
+		if (gameover)
+			return;
+		gameover = true;
 		Debug.Log("Car touched");
 		_scc.gameOver();
 		_ac.playGameover();
@@ -60,6 +107,8 @@ public class gameController : MonoBehaviour
 		player_controls.SetActive(false);
 	}
 
+
+	// Called when the player hits a goal
 	public void goalDestroyed()
 	{
 		goals_reached++;

@@ -6,12 +6,22 @@ public class carAudio : MonoBehaviour
 {
     public AudioSource idle, rev;
     public AudioSource[] crash = new AudioSource[3];
+    public bool gameover = false;
     SimpleCarController _scc;
     Rigidbody rb;
     float mag;
 
     void FixedUpdate()
     {
+        if (gameover)
+        {
+            if (idle.isPlaying)
+                idle.Stop();
+            if (rev.isPlaying)
+                rev.Stop();
+            return;
+        }
+
     	mag = rb.velocity.magnitude;
 
     	if(!_scc.forward)

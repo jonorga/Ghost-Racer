@@ -5,7 +5,14 @@ using UnityEngine;
 public class audioController : MonoBehaviour
 {
 	public AudioSource MU_gameplay, MU_pause, ghosted, point;
+	carAudio car_audio;
 	bool pause = false;
+
+	void Start()
+	{
+		GameObject car_audioGO = GameObject.FindGameObjectWithTag("Player");
+		car_audio = car_audioGO.GetComponent<carAudio>();
+	}
 
 	public void pauseGame()
 	{
@@ -37,6 +44,7 @@ public class audioController : MonoBehaviour
 
 	public void playGameover()
 	{
+		car_audio.gameover = true;
 		ghosted.Play();
 		MU_gameplay.Stop();
 		MU_pause.Stop();
