@@ -5,6 +5,7 @@ using UnityEngine;
 public class carSelector : MonoBehaviour
 {
 	public WheelCollider[] wheel = new WheelCollider[4];
+	public GameObject[] car_body = new GameObject[3];
 	SimpleCarController _scc;
 	Rigidbody carRB;
 	WheelFrictionCurve wfc;
@@ -14,6 +15,7 @@ public class carSelector : MonoBehaviour
 		GameObject _sccGO = GameObject.FindGameObjectWithTag("Player");
 		_scc = _sccGO.GetComponent<SimpleCarController>();
 		carRB = _sccGO.GetComponent<Rigidbody>();
+		
 	}
 
 	/*
@@ -27,9 +29,13 @@ public class carSelector : MonoBehaviour
 	*/
 
 	// Default car
-	void setCar1()
+	public void setCar1()
 	{
+		carRB.mass = 8000;
 		_scc.maxSteeringAngle = 25;
+		car_body[0].SetActive(true);
+		car_body[1].SetActive(false);
+		car_body[2].SetActive(false);
 		for (int i = 0; i <= 3; i++)
 		{
 			wfc = wheel[i].forwardFriction;
@@ -42,29 +48,36 @@ public class carSelector : MonoBehaviour
 		}
 	}
 
-	void setCar2()
+	public void setCar2()
 	{
-		_scc.maxSteeringAngle = 45;
+		carRB.mass = 8000;
+		_scc.maxSteeringAngle = 90;
+		car_body[0].SetActive(false);
+		car_body[1].SetActive(false);
+		car_body[2].SetActive(true);
 		for (int i = 0; i <= 3; i++)
 		{
 			wfc = wheel[i].forwardFriction;
-			wfc.stiffness = 2;
+			wfc.stiffness = 6;
 			wheel[i].forwardFriction = wfc;
 			wfc = wheel[i].sidewaysFriction;
-			wfc.stiffness = 0.8f;
+			wfc.stiffness = 10f;
 			wfc.extremumSlip = 25;
 			wheel[i].sidewaysFriction = wfc;
 		}
 	}
 
-	void setCar3()
+	public void setCar3()
 	{
 		carRB.mass = 4500;
-		_scc.maxSteeringAngle = 50;
+		_scc.maxSteeringAngle = 80;
+		car_body[0].SetActive(false);
+		car_body[1].SetActive(true);
+		car_body[2].SetActive(false);
 		for (int i = 0; i <= 3; i++)
 		{
 			wfc = wheel[i].sidewaysFriction;
-			wfc.stiffness = 1;
+			wfc.stiffness = 1f;
 			wheel[i].sidewaysFriction = wfc;
 		}
 	}
