@@ -114,6 +114,22 @@ public class SimpleCarController : MonoBehaviour
     public void gameOver()
     {
     	ghosted = true;
+        forward = false;
+        back = false;
+        left = false;
+        right = false;
+        motorSpeed = 0;
+        foreach (AxleInfo axleInfo in axleInfos) {
+            if (axleInfo.motor) {
+                axleInfo.leftWheel.motorTorque = 0;
+                axleInfo.rightWheel.motorTorque = 0;
+            }
+        }
+    }
+
+    public void reset_game()
+    {
+        ghosted = false;
     }
 
     public void forwardClick(bool clicked)

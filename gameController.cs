@@ -27,12 +27,17 @@ public class gameController : MonoBehaviour
 	// Car game object
 	public GameObject player_car;
 	public GameObject first_ghost, ghosted_text, player_controls;
+	public GameObject GameoverGO;
+	public GameObject spawnpointsGO, initial_point;
 
 	[Header("Others")]
-	public UnityEngine.UI.Text points_text;
+	public UnityEngine.UI.Text points_text, final_points_text, high_score_text;
 	public Transform[] goal_spawn_point = new Transform[35];
 	public Transform[] ghost_spawn_point = new Transform[9];
-	public int goals_reached;
+	public menuController _mc;
+	public playerData _pd;
+	public adController _adc;
+	public int goals_reached = 0;
 
 	// Private global variables
 	Transform carTF;
@@ -93,6 +98,12 @@ public class gameController : MonoBehaviour
 			}
 	}
 
+	public void quit_game()
+	{
+		togglePause();
+		carTouched();
+	}
+
 
 	// Called when a ghost touches the car
 	public void carTouched()
@@ -100,11 +111,52 @@ public class gameController : MonoBehaviour
 		if (gameover)
 			return;
 		gameover = true;
-		Debug.Log("Car touched");
+		player_controls.SetActive(false);
 		_scc.gameOver();
 		_ac.playGameover();
 		ghosted_text.SetActive(true);
-		player_controls.SetActive(false);
+		StartCoroutine("Gameover_Enum");
+	}
+
+	IEnumerator Gameover_Enum()
+	{
+		int final_score = goals_reached;
+		final_points_text.text = "Points . . . " + final_score.ToString();
+		_pd.high_score_submit(final_score);
+		high_score_text.text = "Best score . . . " + _pd.high_score;
+		yield return new WaitForSeconds(3.5f);
+		ghosted_text.SetActive(false);
+		GameoverGO.SetActive(true);
+		spawnpointsGO.BroadcastMessage("game_end");
+		//if (initial_point)
+		//	initial_point.BroadcastMessage("game_end");
+		reset_car();
+		goals_reached = 0;
+		Instantiate(goal_pointPF, goal_spawn_point[7]);
+		gameover = false;
+		first = true;
+		points_text.text = "0";
+	}
+
+	public void play_again()
+	{
+		GameoverGO.SetActive(false);
+		player_controls.SetActive(true);
+		_scc.reset_game();
+		_adc.callAd();
+	}
+
+	public void back_to_menu()
+	{
+		GameoverGO.SetActive(false);
+		_mc.back_to_main();
+		_scc.reset_game();
+		_adc.callAd();
+	}
+
+	public void activate_controls()
+	{
+		player_controls.SetActive(true);
 	}
 
 
@@ -121,9 +173,9 @@ public class gameController : MonoBehaviour
 		if (first)
 		{
 			first = false;
-			first_ghost.SetActive(true);
+			//first_ghost.SetActive(true);
 			_ac.startGameplayMusic();
-			return;
+			//return;
 		}
 
 
@@ -146,5 +198,13 @@ public class gameController : MonoBehaviour
 		else
 			Time.timeScale = 0;
 		paused = !paused;
+	}
+
+	void reset_car()
+	{
+		Rigidbody carRB = player_car.GetComponent<Rigidbody>();
+		carRB.velocity = Vector3.zero;
+		player_car.transform.position = new Vector3(6.11f, 2.78f, -35.5f);
+		player_car.transform.rotation = Quaternion.Euler(0, 0, 0);
 	}
 }

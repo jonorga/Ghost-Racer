@@ -47,11 +47,19 @@ public class menuController : MonoBehaviour
 	public UnityEngine.Audio.AudioMixer audio_mixer;
 	// Color for button material
 	Color button_color = Color.white;
+	gameController _gc;
 
 
 	public void fadeMainMenu()
 	{
-		StartCoroutine(fadeMainEnum());
+		StartCoroutine("fadeMainEnum");
+	}
+
+	public void back_to_main()
+	{
+		main_menus.SetActive(true);
+		menu_ghosts.SetActive(true);
+		gameplay_controls.SetActive(false);
 	}
 
 	IEnumerator fadeMainEnum()
@@ -65,6 +73,8 @@ public class menuController : MonoBehaviour
 		yield return new WaitForSeconds(0.2f);
 		main_menus.SetActive(false);
 		gameplay_controls.SetActive(true);
+		_gc.activate_controls();
+		Debug.Log("zooooom");
 		while (button_mat.color.a < 1)
 		{
 			button_color.a += 0.1f;
@@ -78,7 +88,8 @@ public class menuController : MonoBehaviour
 	void Start()
 	{
 		button_mat.color = button_color;
-		
+		GameObject gcGO = GameObject.FindGameObjectWithTag("GameController");
+		_gc = gcGO.GetComponent<gameController>();
 	}
 
 	public void music_toggle(bool audio_on)

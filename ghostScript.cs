@@ -21,6 +21,11 @@ public class ghostScript : MonoBehaviour
 		StartCoroutine(speedUp());
 	}
 
+	void game_end()
+	{
+		Destroy(gameObject);
+	}
+
 	IEnumerator speedUp()
 	{
 		for (;;)

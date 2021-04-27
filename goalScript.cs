@@ -17,4 +17,9 @@ public class goalScript : MonoBehaviour
 		_gc.goalDestroyed();
 		Destroy(gameObject.transform.parent.gameObject);
 	}
+
+	void game_end()
+	{
+		Destroy(gameObject.transform.parent.gameObject);
+	}
 }
